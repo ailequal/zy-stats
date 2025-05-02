@@ -1,5 +1,6 @@
 // https://miononno.it/router/zyxel-lte5398-m904
 // Zyxel-hack-v2.0
+
 javascript: ftb();
 
 function dxc(r, n, i) {

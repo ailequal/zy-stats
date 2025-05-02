@@ -1,3 +1,5 @@
+// Removed the 5G stats, since they are not available on the `Zyxel LTE5398-M904`.
+
 javascript: ftb();
 
 function dxc(r, n, i) {
