@@ -28,7 +28,7 @@ export const dxc = (encryptedContentBase64, aesKeyBase64, ivBase64) => {
   // Some implementations might provide an IV of a different length,
   // so this section standardizes it.
   if (ivBuffer.length !== 16) {
-    console.warn(`Warning: IV length is ${ivBuffer.length} bytes, adjusting it to 16 bytes.`);
+    // console.warn(`Warning: IV length is ${ivBuffer.length} bytes, adjusting it to 16 bytes.`);
     // Create a new Buffer of 16 bytes, initialized with zeros.
     const properIv = Buffer.alloc(16);
     // Copy data from the original IV to the new, correctly-sized IV.
