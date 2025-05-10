@@ -23,71 +23,50 @@ const logsDir = path.join(__dirname, "..", "logs");
 
 // Main application logic.
 const app = async (log) => {
-  if (log) {
-    try {
-      await maybeCreateLogsDir(logsDir);
-    } catch (error) {
-      console.log(error.message);
-      return;
-    }
-  }
-
-  let loginCheckData;
   try {
-    loginCheckData = await loginCheck(serverUrl, cookieSession);
+    await maybeCreateLogsDir(logsDir);
+
+    const loginCheckData = await loginCheck(serverUrl, cookieSession);
+    console.log("loginCheckData", loginCheckData);
   } catch (error) {
-    console.log(error.message);
-    return;
+    console.error(error.message);
+    process.exit(1);
   }
-  console.log("loginCheckData", loginCheckData);
 
   let intervalId;
   const loop = async () => {
-    console.clear();
-
-    let statsData;
     try {
-      statsData = await cellwanStatus(serverUrl, cookieSession);
-    } catch (error) {
-      console.log(error.message);
-      clearInterval(intervalId);
-      return;
-    }
-    const { content, iv } = statsData;
+      console.clear();
 
-    let statsJson;
-    try {
+      const { content, iv } = await cellwanStatus(serverUrl, cookieSession);
       const statsDecrypted = dxc(content, aesKey, iv);
-      statsJson = JSON.parse(statsDecrypted);
-    } catch (error) {
-      console.log(error.message);
-      clearInterval(intervalId);
-      return;
-    }
+      const statsJson = JSON.parse(statsDecrypted);
 
-    if (!log) {
-      console.log(generateStats(statsJson, "pretty"));
-    } else {
-      console.log("Logging stats to file...");
-      const statsToLog = generateStats(statsJson, "json");
-      console.log(statsToLog);
-      const logFilePath = getLogFilePath(logsDir);
+      if (!log) {
+        console.log(generateStats(statsJson, "pretty"));
+      } else {
+        console.log("Logging stats to file...");
+        const statsToLog = generateStats(statsJson, "json");
+        console.log(statsToLog);
 
-      try {
+        const logFilePath = getLogFilePath(logsDir);
         const logEntry = JSON.stringify(statsToLog) + "\n";
         await fs.appendFile(logFilePath, logEntry);
         console.log(`Stats logged to "${logFilePath}".`);
-      } catch (error) {
-        console.error(error.message);
-        clearInterval(intervalId);
       }
+    } catch (error) {
+      console.error(error.message);
+      clearInterval(intervalId);
+      process.exit(1);
     }
   };
-  console.log("Waiting for the first interval...");
+
+  console.log("Waiting for the interval to start...");
   intervalId = setInterval(loop, interval * 1000);
 };
 
 // Command-line interface setup.
+// TODO: Add more CLI arguments for setting/overriding the environment variables directly.
 program
   .name("zy-stats")
   .description(`Fetch Zyxel's stats from the CLI.`)

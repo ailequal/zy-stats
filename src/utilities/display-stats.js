@@ -69,11 +69,11 @@ const createBar = (value, min, max, width = 20) => {
  * @param {object} statsJson - The parsed JSON object containing the stats.
  * @param {string} [format='pretty'] - The format of the output: 'pretty' or 'json'.
  * @returns {string} The formatted output string.
+ * @throws {Error} If no valid stats data is available.
  */
 export const generateStats = (statsJson, format = "pretty") => {
   if (!statsJson || !statsJson.Object || !statsJson.Object[0]) {
-    console.log("No valid stats data available to display.");
-    return;
+    throw new Error("No valid stats data available to display.");
   }
 
   const data = statsJson.Object[0];
@@ -112,7 +112,7 @@ export const generateStats = (statsJson, format = "pretty") => {
   const currentBand = data.INTF_Current_Band ? formatBandDetails(data.INTF_Current_Band, pccDlBw, pccUlBw) : "N/A";
 
   let caInfo = "None";
-  if (data.SCC_Info && data.SCC_Info.length > 0) {
+  if (Array.isArray(data.SCC_Info) && data.SCC_Info.length > 0) {
     caInfo = data.SCC_Info.filter((scc) => scc.Enable && scc.Band)
       .map((scc) => {
         return formatBandDetails(scc.Band, 0, 0);
