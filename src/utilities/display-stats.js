@@ -1,3 +1,5 @@
+import chalk from "chalk";
+
 /**
  * Formats band details string.
  * Example: formatBandDetails("LTE_BC7", 20, 10) -> "B7 (20MHz/10MHz)"
@@ -44,7 +46,21 @@ const createBar = (value, min, max, width = 20) => {
   const filledCount = Math.round(percentage * width);
   const emptyCount = width - filledCount;
 
-  return `[${"█".repeat(filledCount)}${" ".repeat(emptyCount)}]`;
+  const filledBar = "█".repeat(filledCount);
+  const emptyBar = " ".repeat(emptyCount);
+
+  let coloredBar;
+  const pc = percentage * 100;
+
+  if (pc < 50) {
+    coloredBar = chalk.yellow(filledBar);
+  } else if (pc < 85) {
+    coloredBar = chalk.green(filledBar);
+  } else {
+    coloredBar = chalk.red(filledBar);
+  }
+
+  return `[${coloredBar}${emptyBar}]`;
 };
 
 /**
