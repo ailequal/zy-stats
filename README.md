@@ -2,6 +2,8 @@
 
 Fetch Zyxel's stats from the CLI.
 
+I already know that the Zyxel's UI has already a built-in way to log most information, but I still wanted to write this tool, mainly for checking the stats from the CLI in a pretty way.
+
 To use this program, you need to fill the `.env` file properly. Right now the automatic first login setup is not supported. So you'll have to login manually from a browser and get from there the needed credentials. Check the `.env.example` file for more information.
 
 To use it, first make sure to have Node.js `v22.15.0` installed (use [nvm](https://github.com/nvm-sh/nvm) to install it with `nvm use`). Then run the following commands:
