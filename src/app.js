@@ -11,6 +11,7 @@ import { loginCheck } from "./utilities/login-check.js";
 import { maybeCreateLogsDir } from "./utilities/maybe-create-logs-dir.js";
 
 // Access environment variables.
+const appVersion = process.env.npm_package_version;
 const serverUrl = process.env.SERVER_URL;
 const aesKey = process.env.AES_KEY;
 const cookieSession = process.env.COOKIE_SESSION;
@@ -70,7 +71,7 @@ const app = async (log) => {
 program
   .name("zy-stats")
   .description(`Fetch Zyxel's stats from the CLI.`)
-  .version("1.0.0")
+  .version(appVersion)
   .option("-l, --log", "log stats into a file")
   .action(async (options) => {
     await app(!!options.log);
