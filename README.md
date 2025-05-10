@@ -2,6 +2,19 @@
 
 Fetch Zyxel's stats from the CLI.
 
+To use this program, you need to fill the `.env` file properly. Right now the automatic first login setup is not supported. So you'll have to login manually from a browser and get from there the needed credentials. Check the `.env.example` file for more information.
+
+To use it, first make sure to have Node.js `v22.15.0` installed (use [nvm](https://github.com/nvm-sh/nvm) to install it with `nvm use`). Then run the following commands:
+
+```bash
+nvm use # set the correct nodejs version
+npm install # install dependencies
+npm run start # shows stats nicely formatted into the terminal
+npm run start -- --log # shows stats in JSON format into the terminal and log them into a file
+```
+
+## Resources
+
 - [miononno.it/router/zyxel-lte5398-m904](https://miononno.it/router/zyxel-lte5398-m904)
 - [forum.fibra.click/d/39114-aggiornamento-firmware-zyxel-lte5398-m904](https://forum.fibra.click/d/39114-aggiornamento-firmware-zyxel-lte5398-m904)
 
