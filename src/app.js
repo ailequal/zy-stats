@@ -72,16 +72,18 @@ const app = async (log) => {
       const statsToLog = generateStats(statsJson, "json");
       console.log(statsToLog);
       const logFilePath = getLogFilePath(logsDir);
-      const logEntry = JSON.stringify(statsToLog) + "\n";
 
       try {
+        const logEntry = JSON.stringify(statsToLog) + "\n";
         await fs.appendFile(logFilePath, logEntry);
         console.log(`Stats logged to "${logFilePath}".`);
       } catch (error) {
-        console.error("Failed to write to log file: ", error.message);
+        console.error(error.message);
+        clearInterval(intervalId);
       }
     }
   };
+  console.log("Waiting for the first interval...");
   intervalId = setInterval(loop, interval * 1000);
 };
 

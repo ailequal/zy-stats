@@ -138,9 +138,9 @@ export const generateStats = (statsJson, format = "pretty") => {
     const formattedTimestamp = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
 
     output = `
-  ########
-  zy-stats
-  ########
+  ${chalk.blue("########")}
+  ${chalk.blue("zy-stats")}
+  ${chalk.blue("########")}
 
   ===========================================
   LTE Network Stats
