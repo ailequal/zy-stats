@@ -51,8 +51,10 @@ const createBar = (value, min, max, width = 20) => {
  * Displays 4G statistics in a CLI-friendly format.
  *
  * @param {object} statsJson - The parsed JSON object containing the stats.
+ * @param {string} [format='pretty'] - The format of the output: 'pretty' or 'json'.
+ * @returns {string} The formatted output string.
  */
-export const displayStats = (statsJson) => {
+export const generateStats = (statsJson, format = "pretty") => {
   if (!statsJson || !statsJson.Object || !statsJson.Object[0]) {
     console.log("No valid stats data available to display.");
     return;
@@ -114,14 +116,19 @@ export const displayStats = (statsJson) => {
     lteItalyLink = `https://lteitaly.it/internal/map.php#bts=${plmn}.${enbId}`;
   }
 
-  const output = `
+  let output;
+  if (format === "pretty") {
+    const now = new Date();
+    const formattedTimestamp = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+
+    output = `
   ########
   zy-stats
   ########
 
-  =================================
+  ===========================================
   LTE Network Stats
-  ---------------------------------
+  -------------------------------------------
   Technology:   ${technology}
   PLMN:         ${plmn}
   ENB ID:       ${enbId}
@@ -129,17 +136,37 @@ export const displayStats = (statsJson) => {
   PCI:          ${pci}
   EARFCN:       ${earfcn}
   LTEItaly:     ${lteItalyLink}
-  ---------------------------------
+  -------------------------------------------
   Primary Band: ${currentBand}
   CA Bands:     ${caInfo}
-  ---------------------------------
+  -------------------------------------------
   Signal Quality (4G LTE)
   RSRP: ${rsrp !== undefined ? `${String(rsrp).padStart(4, " ")} dBm` : "N/A".padEnd(7)} ${createBar(rsrp, -130, -60, 25)}
   RSRQ: ${rsrq !== undefined ? `${String(rsrq).padStart(4, " ")} dB ` : "N/A".padEnd(7)} ${createBar(rsrq, -20, -3, 25)}
   SINR: ${sinr !== undefined ? `${String(sinr).padStart(4, " ")} dB ` : "N/A".padEnd(7)} ${createBar(sinr, -5, 30, 25)}
   RSSI: ${rssi !== undefined ? `${String(rssi).padStart(4, " ")} dBm` : "N/A".padEnd(7)} ${createBar(rssi, -110, -50, 25)}
-  =================================
+  -------------------------------------------
+  Report generated at: ${formattedTimestamp}
+  ===========================================
   `;
+  } else {
+    output = {
+      technology,
+      plmn,
+      enbId,
+      cellId,
+      pci,
+      earfcn,
+      lteItalyLink,
+      currentBand,
+      caInfo,
+      rsrp,
+      rsrq,
+      sinr,
+      rssi,
+      timestamp: new Date().toISOString(),
+    };
+  }
 
-  console.log(output);
+  return output;
 };
