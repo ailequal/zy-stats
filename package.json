@@ -1,9 +1,12 @@
 {
   "name": "zy-stats",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Fetch Zyxel's stats from the CLI.",
   "main": "app.js",
   "type": "module",
+  "bin": {
+    "zy-stats": "src/app.js"
+  },
   "scripts": {
     "start": "node src/app.js",
     "prettier:check": "prettier --check .",
@@ -33,7 +36,8 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "puppeteer-core": "^24.8.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",

@@ -1,4 +1,4 @@
-export const loginCheck = async (serverUrl, cookieSession) => {
+export default async (serverUrl, cookieSession) => {
   const result = await fetch(`${serverUrl}/cgi-bin/UserLoginCheck`, {
     method: "GET",
     headers: { cookie: `Session=${cookieSession}` },

@@ -1,4 +1,4 @@
-export const cellwanStatus = async (serverUrl, cookieSession) => {
+export default async (serverUrl, cookieSession) => {
   const result = await fetch(`${serverUrl}/cgi-bin/DAL?oid=cellwan_status`, {
     method: "GET",
     headers: { cookie: `Session=${cookieSession}` },

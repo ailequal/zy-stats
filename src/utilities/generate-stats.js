@@ -71,7 +71,7 @@ const createBar = (value, min, max, width = 20) => {
  * @returns {string} The formatted output string.
  * @throws {Error} If no valid stats data is available.
  */
-export const generateStats = (statsJson, format = "pretty") => {
+export default (statsJson, format = "pretty") => {
   if (!statsJson || !statsJson.Object || !statsJson.Object[0]) {
     throw new Error("No valid stats data available to display.");
   }

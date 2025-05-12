@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 
-export const maybeCreateLogsDir = async (logsDir) => {
+export default async (logsDir) => {
   try {
     await fs.access(logsDir);
   } catch (error) {

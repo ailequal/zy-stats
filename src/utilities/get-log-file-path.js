@@ -1,6 +1,6 @@
 import path from "path";
 
-export const getLogFilePath = (logsDir) => {
+export default (logsDir) => {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");

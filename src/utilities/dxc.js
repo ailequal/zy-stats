@@ -18,7 +18,7 @@ import { createDecipheriv } from "crypto";
  *                 or if any other error occurs during the decryption process.
  *                 The original error from the crypto library will be re-thrown.
  */
-export const dxc = (encryptedContentBase64, aesKeyBase64, ivBase64) => {
+export default (encryptedContentBase64, aesKeyBase64, ivBase64) => {
   // Convert Base64 encoded strings for AES key and IV into Buffers.
   // Buffers are Node.js specific objects for handling binary data.
   const aesKeyBuffer = Buffer.from(aesKeyBase64, "base64");
