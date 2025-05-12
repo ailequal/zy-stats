@@ -1,5 +1,7 @@
 import chalk from "chalk";
 
+// TODO: Also add 5G stats suppport.
+
 /**
  * Formats band details string.
  * Example: formatBandDetails("LTE_BC7", 20, 10) -> "B7 (20MHz/10MHz)"
