@@ -27,6 +27,7 @@ const LOGS_DIR = path.join(__dirname, "..", "logs");
 
 // Main application logic.
 const app = async ({ headless, serverUrl, username, password, interval, log }) => {
+  // TODO: Add Firefox as a browser option.
   const browser = await puppeteer.launch({ channel: PUPPETEER_CHANNEL, headless: headless });
   const page = await browser.newPage();
 
