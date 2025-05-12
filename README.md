@@ -4,16 +4,36 @@ Fetch Zyxel's stats from the CLI.
 
 I already know that the Zyxel's UI has already a built-in way to log most information, but I still wanted to write this tool, mainly for checking the stats from the CLI in a pretty way.
 
-To use this program, you need to fill the `.env` file properly. Right now the automatic first login setup is not supported. So you'll have to login manually from a browser and get from there the needed credentials. Check the `.env.example` file for more information.
+## Setup
 
-To use it, first make sure to have Node.js `v22.15.0` installed (use [nvm](https://github.com/nvm-sh/nvm) to install it with `nvm use`). Then run the following commands:
+To use it, first make sure to have Node.js `v22.15.0` installed (use [nvm](https://github.com/nvm-sh/nvm) to install it with `nvm use`).
+
+Beware that `zy-stats` needs Google Chrome installed on the host machine to perform the log in successfully thorugh Puppeteer.
+
+To use this program, you need to fill the `.env` file properly (or directly pass the environment variables as CLI arguments). Check the `.env.example` file for more information.
+
+Here below are listed the basic steps to install and run the program:
 
 ```bash
+git clone https://github.com/ailequal/zy-stats.git
+cd zy-stats
+chmod +x ./src/app.js # make the script executable
 nvm use # set the correct nodejs version
-npm install # install dependencies
-npm run start # shows stats nicely formatted into the terminal
-npm run start -- --log # shows stats in JSON format into the terminal and log them into a file
+npm install --omit=dev # install only the production dependencies
+
+# fill the .env file with the correct credentials
+npx zy-stats # shows stats nicely formatted into the terminal
+npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # or without filling the .env file
 ```
+
+## CLI arguments
+
+- `--no-headless`: disable browser headless mode (useful for debugging).
+- `--server-url`: the URL of the Zyxel router.
+- `--username`: the username to access the Zyxel router.
+- `--password`: the password to access the Zyxel router.
+- `--interval`: the interval in seconds to fetch the stats.
+- `--log`: log the stats into a file in JSON format.
 
 ## Resources
 
