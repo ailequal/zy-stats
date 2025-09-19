@@ -6,7 +6,7 @@ I already know that the Zyxel's UI has already a built-in way to log most inform
 
 ## Setup
 
-To use it, first make sure to have Node.js `v22.15.0` installed (use [nvm](https://github.com/nvm-sh/nvm) to install it with `nvm use`).
+To use it, first make sure to have the compatible Node.js version active ([nvm](https://github.com/nvm-sh/nvm) execute `nvm use`).
 
 Beware that `zy-stats` needs Google Chrome installed on the host machine to perform the log in successfully thorugh Puppeteer.
 

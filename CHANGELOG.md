@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1 - 2025-09-19
+
+- Fix - Minor adjustment to the formatting layout in `generate-stats.js`.
+- Update - Updated dependencies.
+
 ## 1.1.0 - 2025-05-12
 
 - Add - The program does actually log in from scratch now.

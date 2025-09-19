@@ -147,13 +147,13 @@ export default (statsJson, format = "pretty") => {
   ===========================================
   LTE Network Stats
   -------------------------------------------
-  Technology:   ${technology}
-  PLMN:         ${plmn}
-  ENB ID:       ${enbId}
-  Cell ID:      ${cellId}
-  PCI:          ${pci}
-  EARFCN:       ${earfcn}
-  LTEItaly:     ${lteItalyLink}
+  Technology: ${technology}
+  PLMN:       ${plmn}
+  ENB ID:     ${enbId}
+  Cell ID:    ${cellId}
+  PCI:        ${pci}
+  EARFCN:     ${earfcn}
+  LTEItaly:   ${lteItalyLink}
   -------------------------------------------
   Primary Band: ${currentBand}
   CA Bands:     ${caInfo}
