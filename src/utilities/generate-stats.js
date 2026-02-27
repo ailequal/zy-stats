@@ -85,11 +85,11 @@ const createBar = (value, min, max, width = 20) => {
 };
 
 /**
- * Displays 4G statistics in a CLI-friendly format.
+ * Generates formatted network statistics from a cellwan status API response.
  *
- * @param {object} statsJson - The parsed JSON object containing the stats.
- * @param {string} [format='pretty'] - The format of the output: 'pretty' or 'json'.
- * @returns {string} The formatted output string.
+ * @param {import("../types.js").CellwanStatusResponse} statsJson - The parsed cellwan status API response.
+ * @param {"pretty" | "json"} [format="pretty"] - Output format: `"pretty"` for a coloured CLI string, `"json"` for a structured object.
+ * @returns {string | import("../types.js").StatsJsonOutput} A formatted string when `format` is `"pretty"`, or a {@link import("../types.js").StatsJsonOutput} object when `"json"`.
  * @throws {Error} If no valid stats data is available.
  */
 export default (statsJson, format = "pretty") => {
@@ -115,6 +115,7 @@ export default (statsJson, format = "pretty") => {
   }
 
   const cellId = data.INTF_Cell_ID !== undefined ? data.INTF_Cell_ID : "N/A";
+  /** @type {number | string} */
   let enbId = "N/A";
   if (cellId !== "N/A") {
     enbId = Math.trunc(cellId / 256);
@@ -128,8 +129,8 @@ export default (statsJson, format = "pretty") => {
   const pci = data.INTF_PhyCell_ID !== undefined ? data.INTF_PhyCell_ID : "N/A";
   const earfcn = data.INTF_RFCN !== undefined ? data.INTF_RFCN : "N/A";
 
-  const pccUlBw = data.INTF_Uplink_Bandwidth !== undefined ? 5 * (data.INTF_Uplink_Bandwidth - 1) : 0;
-  const pccDlBw = data.INTF_Downlink_Bandwidth !== undefined ? 5 * (data.INTF_Downlink_Bandwidth - 1) : 0;
+  const pccUlBw = data.INTF_Uplink_Bandwidth !== undefined ? 5 * (Number(data.INTF_Uplink_Bandwidth) - 1) : 0;
+  const pccDlBw = data.INTF_Downlink_Bandwidth !== undefined ? 5 * (Number(data.INTF_Downlink_Bandwidth) - 1) : 0;
   const currentBand = data.INTF_Current_Band ? formatBandDetails(data.INTF_Current_Band, pccDlBw, pccUlBw) : "N/A";
 
   let caInfo = "None";

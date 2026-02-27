@@ -15,8 +15,11 @@ import loginCheck from "./utilities/login-check.js";
 import maybeCreateLogsDir from "./utilities/maybe-create-logs-dir.js";
 
 // Global constants.
+/** @type {import("puppeteer-core").ChromeReleaseChannel} Puppeteer browser channel to launch. */
 const PUPPETEER_CHANNEL = "chrome";
+/** @type {string} Name of the session cookie set by the Zyxel router. */
 const SESSION_COOKIE_NAME = "Session";
+/** @type {string} localStorage key that holds the AES encryption key. */
 const AES_KEY_LOCAL_STORAGE_KEY = "zySessionKey";
 
 // Create the `/logs` directory at the root of the project.
@@ -24,7 +27,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const LOGS_DIR = path.join(__dirname, "..", "logs");
 
-// Main application logic.
+/**
+ * Main application logic.
+ *
+ * Launches a headless browser to log into the Zyxel router, retrieves the
+ * session cookie and AES key, then starts a polling loop that periodically
+ * fetches and displays (or logs) network statistics.
+ *
+ * @param {import("./types.js").AppOptions} options - CLI options parsed by Commander.
+ * @returns {Promise<void>}
+ */
 const app = async ({ headless, serverUrl, username, password, interval, log }) => {
   const browser = await puppeteer.launch({ channel: PUPPETEER_CHANNEL, headless: headless, acceptInsecureCerts: true });
   const page = await browser.newPage();

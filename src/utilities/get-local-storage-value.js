@@ -1,5 +1,15 @@
 /* eslint-disable no-undef */
 
+/**
+ * Retrieves a value from `localStorage` via a Puppeteer page.
+ *
+ * The function evaluates a script in the browser context that reads all
+ * `localStorage` entries and returns the one matching the given key.
+ *
+ * @param {import("puppeteer-core").Page} page - The Puppeteer page instance.
+ * @param {string} itemKey - The `localStorage` key to look up.
+ * @returns {Promise<string | undefined>} The stored value, or `undefined` if the key does not exist.
+ */
 export default async (page, itemKey) => {
   const localStorageData = await page.evaluate(() => {
     let json = {};
