@@ -1,7 +1,10 @@
+import httpsAgent from "./https-agent.js";
+
 export default async (serverUrl, cookieSession) => {
   const result = await fetch(`${serverUrl}/cgi-bin/UserLoginCheck`, {
     method: "GET",
     headers: { cookie: `Session=${cookieSession}` },
+    dispatcher: httpsAgent,
   });
 
   if (result.status !== 200) {

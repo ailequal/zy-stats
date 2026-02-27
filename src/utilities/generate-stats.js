@@ -1,12 +1,26 @@
 import chalk from "chalk";
 
-// TODO: Also add 5G stats suppport.
+/**
+ * Parses bandwidth string to number.
+ * Example: parseBandwidth("60M") -> 60
+ *
+ * @param {string|number} bandwidth - The bandwidth value, e.g., "60M" or 60.
+ * @returns {number} Bandwidth in MHz.
+ */
+const parseBandwidth = (bandwidth) => {
+  if (typeof bandwidth === "number") return bandwidth;
+  if (typeof bandwidth === "string" && bandwidth.endsWith("M")) {
+    return parseInt(bandwidth.slice(0, -1), 10) || 0;
+  }
+  return 0;
+};
 
 /**
  * Formats band details string.
  * Example: formatBandDetails("LTE_BC7", 20, 10) -> "B7 (20MHz/10MHz)"
+ * Example: formatBandDetails("N78", 60, 60) -> "N78 (60MHz/60MHz)"
  *
- * @param {string} bandString - The band string, e.g., "LTE_BC7" or "B1".
+ * @param {string} bandString - The band string, e.g., "LTE_BC7", "B1", or "N78".
  * @param {number} dlBandwidth - Downlink bandwidth in MHz.
  * @param {number} ulBandwidth - Uplink bandwidth in MHz.
  * @returns {string} Formatted band details.
@@ -15,13 +29,18 @@ const formatBandDetails = (bandString, dlBandwidth, ulBandwidth) => {
   let output = "";
 
   if (bandString && bandString.length > 0) {
-    const bandNumber = bandString.includes("LTE_BC")
-      ? bandString.slice(6)
-      : bandString.startsWith("B")
-        ? bandString.slice(1)
-        : bandString;
+    // Handle 5G NR bands (N1, N78, etc.)
+    if (bandString.startsWith("N") || bandString.startsWith("n")) {
+      output += bandString.toUpperCase();
+    } else {
+      const bandNumber = bandString.includes("LTE_BC")
+        ? bandString.slice(6)
+        : bandString.startsWith("B")
+          ? bandString.slice(1)
+          : bandString;
 
-    output += `B${bandNumber}`;
+      output += `B${bandNumber}`;
+    }
   }
 
   if (dlBandwidth > 0 || ulBandwidth > 0) {
@@ -129,6 +148,18 @@ export default (statsJson, format = "pretty") => {
   const sinr = data.INTF_SINR;
   const rssi = data.INTF_RSSI;
 
+  // 5G NSA data extraction.
+  const nsaEnabled = data.NSA_Enable === true;
+  const nsaPci = nsaEnabled && data.NSA_PhyCellID !== undefined ? data.NSA_PhyCellID : "N/A";
+  const nsaRfcn = nsaEnabled && data.NSA_RFCN !== undefined ? data.NSA_RFCN : "N/A";
+  const nsaUlBw = nsaEnabled ? parseBandwidth(data.NSA_UplinkBandwidth) : 0;
+  const nsaDlBw = nsaEnabled ? parseBandwidth(data.NSA_DownlinkBandwidth) : 0;
+  const nsaBand = nsaEnabled && data.NSA_Band ? formatBandDetails(data.NSA_Band, nsaDlBw, nsaUlBw) : "N/A";
+  const nsaRsrp = nsaEnabled ? data.NSA_RSRP : undefined;
+  const nsaRsrq = nsaEnabled ? data.NSA_RSRQ : undefined;
+  const nsaSinr = nsaEnabled ? data.NSA_SINR : undefined;
+  const nsaRssi = nsaEnabled ? data.NSA_RSSI : undefined;
+
   let lteItalyLink = "N/A";
   if (plmn !== "N/A" && enbId !== "N/A") {
     lteItalyLink = `https://lteitaly.it/internal/map.php#bts=${plmn}.${enbId}`;
@@ -139,10 +170,8 @@ export default (statsJson, format = "pretty") => {
     const now = new Date();
     const formattedTimestamp = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
 
+    // TODO: Review the output format and content.
     output = `
-  ${chalk.blue("########")}
-  ${chalk.blue("zy-stats")}
-  ${chalk.blue("########")}
 
   ===========================================
   LTE Network Stats
@@ -164,6 +193,21 @@ export default (statsJson, format = "pretty") => {
   SINR: ${sinr !== undefined ? `${String(sinr).padStart(4, " ")} dB ` : "N/A".padEnd(7)} ${createBar(sinr, -5, 30, 25)}
   RSSI: ${rssi !== undefined ? `${String(rssi).padStart(4, " ")} dBm` : "N/A".padEnd(7)} ${createBar(rssi, -110, -50, 25)}
   -------------------------------------------
+  5G NSA Status: ${nsaEnabled ? "Enabled" : "Disabled"}
+  ${
+    nsaEnabled
+      ? `NR Band:      ${nsaBand}
+  NR PCI:       ${nsaPci}
+  NR ARFCN:     ${nsaRfcn}
+  -------------------------------------------
+  Signal Quality (5G NR)
+  RSRP: ${nsaRsrp !== undefined ? `${String(nsaRsrp).padStart(4, " ")} dBm` : "N/A".padEnd(7)} ${createBar(nsaRsrp, -130, -60, 25)}
+  RSRQ: ${nsaRsrq !== undefined ? `${String(nsaRsrq).padStart(4, " ")} dB ` : "N/A".padEnd(7)} ${createBar(nsaRsrq, -20, -3, 25)}
+  SINR: ${nsaSinr !== undefined ? `${String(nsaSinr).padStart(4, " ")} dB ` : "N/A".padEnd(7)} ${createBar(nsaSinr, -5, 30, 25)}
+  RSSI: ${nsaRssi !== undefined ? `${String(nsaRssi).padStart(4, " ")} dBm` : "N/A".padEnd(7)} ${createBar(nsaRssi, -110, -50, 25)}
+  `
+      : ""
+  }-------------------------------------------
   Report generated at: ${formattedTimestamp}
   ===========================================
   `;
@@ -182,6 +226,16 @@ export default (statsJson, format = "pretty") => {
       rsrq,
       sinr,
       rssi,
+      nsa: {
+        enabled: nsaEnabled,
+        band: nsaBand,
+        pci: nsaPci,
+        arfcn: nsaRfcn,
+        rsrp: nsaRsrp,
+        rsrq: nsaRsrq,
+        sinr: nsaSinr,
+        rssi: nsaRssi,
+      },
       timestamp: new Date().toISOString(),
     };
   }
