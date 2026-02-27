@@ -1,7 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S node --env-file=.env
 
 import { program } from "commander";
-import "dotenv/config";
 import fs from "fs/promises";
 import path from "path";
 import puppeteer from "puppeteer-core";
