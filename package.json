@@ -9,6 +9,8 @@
   },
   "scripts": {
     "start": "node --env-file=.env src/app.js",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -41,7 +43,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.2",
     "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
     "globals": "^17.3.0",
     "prettier": "3.8.1"
   }

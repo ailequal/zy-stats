@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-
 /**
  * Retrieves a value from `localStorage` via a Puppeteer page.
  *
