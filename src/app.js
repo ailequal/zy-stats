@@ -4,6 +4,7 @@ import { program } from "commander";
 import fs from "fs/promises";
 import path from "path";
 import puppeteer from "puppeteer-core";
+import { setTimeout } from "timers/promises";
 import { fileURLToPath } from "url";
 import cellwanStatus from "./utilities/cellwan-status.js";
 import generateStats from "./utilities/generate-stats.js";
@@ -69,35 +70,51 @@ const app = async ({ headless, serverUrl, username, password, interval, log }) =
     process.exit(1);
   }
 
-  // TODO: Handle loop better??
-  let intervalId;
+  // Graceful shutdown via AbortController.
+  // Handles both Ctrl+C (SIGINT) and termination signals (SIGTERM).
+  const ac = new AbortController();
+  const { signal } = ac;
+  const shutdown = () => {
+    console.log("\nShutting down...");
+    ac.abort();
+  };
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+
+  // Main logic.
   const loop = async () => {
-    try {
-      console.clear();
+    console.clear();
 
-      const statsJson = await cellwanStatus(serverUrl, session);
+    const statsJson = await cellwanStatus(serverUrl, session);
 
-      if (!log) {
-        console.log(generateStats(statsJson, "pretty"));
-      } else {
-        console.log("Logging stats to file...");
-        const statsToLog = generateStats(statsJson, "json");
-        console.log(statsToLog);
+    if (!log) {
+      console.log(generateStats(statsJson, "pretty"));
+    } else {
+      console.log("Logging stats to file...");
+      const statsToLog = generateStats(statsJson, "json");
+      console.log(statsToLog);
 
-        const logFilePath = getLogFilePath(LOGS_DIR);
-        const logEntry = JSON.stringify(statsToLog) + "\n";
-        await fs.appendFile(logFilePath, logEntry);
-        console.log(`Stats logged to "${logFilePath}".`);
-      }
-    } catch (error) {
-      console.error(error.message);
-      clearInterval(intervalId);
-      process.exit(1);
+      const logFilePath = getLogFilePath(LOGS_DIR);
+      const logEntry = JSON.stringify(statsToLog) + "\n";
+      await fs.appendFile(logFilePath, logEntry);
+      console.log(`Stats logged to "${logFilePath}".`);
     }
   };
 
-  console.log("Waiting for the interval to start...");
-  intervalId = setInterval(loop, interval * 1000);
+  // Run once immediately, then wait for the interval before repeating.
+  try {
+    while (!signal.aborted) {
+      await loop();
+      await setTimeout(interval * 1000, null, { signal });
+    }
+  } catch (error) {
+    if (error.name === "AbortError") {
+      process.exit(0);
+    }
+
+    console.error(error.message);
+    process.exit(1);
+  }
 };
 
 // Access environment variables.

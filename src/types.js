@@ -6,6 +6,9 @@
  * `@type {import("../types.js").TypeName}` (or `"./types.js"` from `src/`).
  */
 
+// TODO: Consider porting the project to TypeScript with type stripping.
+//  @link https://nodejs.org/docs/latest-v24.x/api/typescript.html#type-stripping
+
 // ---------------------------------------------------------------------------
 // Cellwan Status API – response types
 // ---------------------------------------------------------------------------
