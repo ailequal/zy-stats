@@ -1,8 +1,15 @@
 ## zy-stats
 
-Fetch Zyxel's stats from the CLI.
+Fetch Zyxel's stats from the CLI in a pretty way.
 
-I already know that the Zyxel's UI has already a built-in way to log most information, but I still wanted to write this tool, mainly for checking the stats from the CLI in a pretty way.
+## Device support
+
+Checkout the different project's tags for the supported devices:
+
+- `2.0.0` and higher: Zyxel Nebula FWA505
+- `1.1.1` and lower: Zyxel LTE5398-M904
+
+The program might also work with other models, but no guarantee is given (some slightly adjustments might be required).
 
 ## Setup
 
@@ -23,7 +30,11 @@ npm install --omit=dev # install only the production dependencies
 
 # fill the .env file with the correct credentials
 npx zy-stats # shows stats nicely formatted into the terminal
-npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # or without filling the .env file
+npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
+npm exec zy-stats -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
+
+# handy alias
+alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
 ```
 
 ## CLI arguments
@@ -37,21 +48,5 @@ npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'pass
 
 ## Resources
 
-- [miononno.it/router/zyxel-lte5398-m904](https://miononno.it/router/zyxel-lte5398-m904)
-- [forum.fibra.click/d/39114-aggiornamento-firmware-zyxel-lte5398-m904](https://forum.fibra.click/d/39114-aggiornamento-firmware-zyxel-lte5398-m904)
-
-## Third party libraries
-
-A list of potentially useful libraries to use in this project:
-
-- [tj/commander.js](https://github.com/tj/commander.js)
-- [yargs/yargs](https://github.com/yargs/yargs)
-- [oclif/oclif](https://github.com/oclif/oclif)
-
-- [chalk/chalk](https://github.com/chalk/chalk)
-- [SBoudrias/Inquirer.js](https://github.com/SBoudrias/Inquirer.js)
-
-- [motdotla/dotenv](https://github.com/motdotla/dotenv)
-- [dotenvx/dotenvx](https://github.com/dotenvx/dotenvx)
-
-- [winstonjs/winston](https://github.com/winstonjs/winston)
+- [Zyxel Nebula FWA505](https://www.zyxel.com/global/en/products/mobile-broadband/nebula-5g-nr-indoor-router-nebula-fwa505)
+- [miononno.it/router/zyxel-fwa-505](https://miononno.it/router/zyxel-fwa-505)

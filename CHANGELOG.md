@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.0.0 - 2026-02-27
+
+- Update - Removed support for Zyxel LTE5398-M904 and added support for Zyxel Nebula FWA505.
+- Update - Updated to Node.js 24.
+- Update - Updated dependencies.
+- Update - Remvoed dotenv package.
+- Update - Improved the main loop core logic.
+- Update - Improved JS docs and types.
+
 ## 1.1.1 - 2025-09-19
 
 - Fix - Minor adjustment to the formatting layout in `generate-stats.js`.
