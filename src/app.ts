@@ -6,20 +6,21 @@ import path from "path";
 import puppeteer from "puppeteer-core";
 import { setTimeout } from "timers/promises";
 import { fileURLToPath } from "url";
-import cellwanStatus from "./utilities/cellwan-status.js";
-import generateStats from "./utilities/generate-stats.js";
-import getCookie from "./utilities/get-cookie-value.js";
-import getLocalStorageValue from "./utilities/get-local-storage-value.js";
-import getLogFilePath from "./utilities/get-log-file-path.js";
-import loginCheck from "./utilities/login-check.js";
-import maybeCreateLogsDir from "./utilities/maybe-create-logs-dir.js";
+import type { AppOptions } from "./types.ts";
+import cellwanStatus from "./utilities/cellwan-status.ts";
+import generateStats from "./utilities/generate-stats.ts";
+import getCookie from "./utilities/get-cookie-value.ts";
+import getLocalStorageValue from "./utilities/get-local-storage-value.ts";
+import getLogFilePath from "./utilities/get-log-file-path.ts";
+import loginCheck from "./utilities/login-check.ts";
+import maybeCreateLogsDir from "./utilities/maybe-create-logs-dir.ts";
 
 // Global constants.
-/** @type {import("puppeteer-core").ChromeReleaseChannel} Puppeteer browser channel to launch. */
-const PUPPETEER_CHANNEL = "chrome";
-/** @type {string} Name of the session cookie set by the Zyxel router. */
+/** Puppeteer browser channel to launch. */
+const PUPPETEER_CHANNEL: puppeteer.ChromeReleaseChannel = "chrome";
+/** Name of the session cookie set by the Zyxel router. */
 const SESSION_COOKIE_NAME = "Session";
-/** @type {string} localStorage key that holds the AES encryption key. */
+/** localStorage key that holds the AES encryption key. */
 const AES_KEY_LOCAL_STORAGE_KEY = "zySessionKey";
 
 // Create the `/logs` directory at the root of the project.
@@ -34,10 +35,9 @@ const LOGS_DIR = path.join(__dirname, "..", "logs");
  * session cookie and AES key, then starts a polling loop that periodically
  * fetches and displays (or logs) network statistics.
  *
- * @param {import("./types.js").AppOptions} options - CLI options parsed by Commander.
- * @returns {Promise<void>}
+ * @param options - CLI options parsed by Commander.
  */
-const app = async ({ headless, serverUrl, username, password, interval, log }) => {
+const app = async ({ headless, serverUrl, username, password, interval, log }: AppOptions): Promise<void> => {
   const browser = await puppeteer.launch({ channel: PUPPETEER_CHANNEL, headless: headless, acceptInsecureCerts: true });
   const page = await browser.newPage();
 
@@ -66,7 +66,7 @@ const app = async ({ headless, serverUrl, username, password, interval, log }) =
     const loginCheckData = await loginCheck(serverUrl, session);
     console.log("loginCheckData", loginCheckData);
   } catch (error) {
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1);
   }
 
@@ -82,7 +82,7 @@ const app = async ({ headless, serverUrl, username, password, interval, log }) =
   process.on("SIGTERM", shutdown);
 
   // Main logic.
-  const loop = async () => {
+  const loop = async (): Promise<void> => {
     console.clear();
 
     const statsJson = await cellwanStatus(serverUrl, session);
@@ -108,11 +108,11 @@ const app = async ({ headless, serverUrl, username, password, interval, log }) =
       await setTimeout(interval * 1000, null, { signal });
     }
   } catch (error) {
-    if (error.name === "AbortError") {
+    if ((error as Error).name === "AbortError") {
       process.exit(0);
     }
 
-    console.error(error.message);
+    console.error((error as Error).message);
     process.exit(1);
   }
 };
@@ -128,12 +128,12 @@ const interval = process.env.INTERVAL;
 program
   .name("zy-stats")
   .description(`Fetch Zyxel's stats from the CLI.`)
-  .version(appVersion)
+  .version(appVersion ?? "")
   .option("--no-headless", "disable headless mode")
   .option("-s, --server-url <url>", "server URL", serverUrl)
   .option("-u, --username <username>", "username for login", username)
   .option("-p, --password <password>", "password for login", password)
   .option("-i, --interval <seconds>", "interval in seconds for fetching stats", interval)
   .option("-l, --log", "log stats into a file", false)
-  .action((options) => app(options));
+  .action((options: AppOptions) => app(options));
 program.parse();

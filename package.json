@@ -2,13 +2,14 @@
   "name": "zy-stats",
   "version": "2.0.0",
   "description": "Fetch Zyxel's stats from the CLI.",
-  "main": "app.js",
+  "main": "app.ts",
   "type": "module",
   "bin": {
-    "zy-stats": "src/app.js"
+    "zy-stats": "src/app.ts"
   },
   "scripts": {
-    "start": "node --env-file=.env src/app.js",
+    "start": "node --env-file=.env src/app.ts",
+    "type:check": "tsc --noEmit",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --check .",
@@ -47,6 +48,8 @@
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "globals": "^17.3.0",
-    "prettier": "3.8.1"
+    "prettier": "3.8.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.2"
   }
 }

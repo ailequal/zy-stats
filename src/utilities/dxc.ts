@@ -1,4 +1,4 @@
-import { createDecipheriv } from "crypto";
+import { createDecipheriv, type CipherKey } from "crypto";
 
 /**
  * Decrypts content that was encrypted using AES in CBC mode.
@@ -6,22 +6,21 @@ import { createDecipheriv } from "crypto";
  * based on the length of the provided key. It also handles IV length adjustments,
  * ensuring the IV is 16 bytes as required for AES CBC.
  *
- * @param {string} encryptedContentBase64 - The Base64 encoded string of the encrypted content.
- * @param {string} aesKeyBase64 - The Base64 encoded AES encryption key.
- *                                The key length determines the AES algorithm:
- *                                16 bytes for AES-128, 24 bytes for AES-192, or 32 bytes for AES-256.
- * @param {string} ivBase64 - The Base64 encoded Initialization Vector (IV).
- *                            If the IV is not 16 bytes, it will be adjusted
- *                            (padded with zeros or truncated) to 16 bytes.
- * @returns {string} The decrypted content as a UTF-8 string.
+ * @param encryptedContentBase64 - The Base64 encoded string of the encrypted content.
+ * @param aesKeyBase64 - The Base64 encoded AES encryption key.
+ *                       The key length determines the AES algorithm:
+ *                       16 bytes for AES-128, 24 bytes for AES-192, or 32 bytes for AES-256.
+ * @param ivBase64 - The Base64 encoded Initialization Vector (IV).
+ *                   If the IV is not 16 bytes, it will be adjusted
+ *                   (padded with zeros or truncated) to 16 bytes.
+ * @returns The decrypted content as a UTF-8 string.
  * @throws {Error} Throws an error if the key size is unsupported (not 128, 192, or 256 bits),
  *                 or if any other error occurs during the decryption process.
- *                 The original error from the crypto library will be re-thrown.
  */
-export default (encryptedContentBase64, aesKeyBase64, ivBase64) => {
+export default (encryptedContentBase64: string, aesKeyBase64: string, ivBase64: string): string => {
   // Convert Base64 encoded strings for AES key and IV into Buffers.
   // Buffers are Node.js specific objects for handling binary data.
-  const aesKeyBuffer = Buffer.from(aesKeyBase64, "base64");
+  const aesKeyBuffer: CipherKey = Buffer.from(aesKeyBase64, "base64");
   let ivBuffer = Buffer.from(ivBase64, "base64");
 
   // Ensure the IV is exactly 16 bytes long, as required by AES in CBC mode.
@@ -41,7 +40,7 @@ export default (encryptedContentBase64, aesKeyBase64, ivBase64) => {
   // Determine the AES algorithm variant (AES-128, AES-192, or AES-256)
   // based on the length of the provided key.
   const keySizeInBits = aesKeyBuffer.length * 8; // Convert key length from bytes to bits.
-  let algorithm;
+  let algorithm: string;
   if (keySizeInBits === 128) {
     algorithm = "aes-128-cbc"; // Use AES-128 in CBC mode.
   } else if (keySizeInBits === 192) {

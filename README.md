@@ -24,7 +24,7 @@ Here below are listed the basic steps to install and run the program:
 ```bash
 git clone https://github.com/ailequal/zy-stats.git
 cd zy-stats
-chmod +x ./src/app.js # make the script executable
+chmod +x ./src/app.ts # make the script executable
 nvm use # set the correct nodejs version
 npm install --omit=dev # install only the production dependencies
 
@@ -45,6 +45,10 @@ alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
 - `--password`: the password to access the Zyxel router.
 - `--interval`: the interval in seconds to fetch the stats.
 - `--log`: log the stats into a file in JSON format.
+
+## Development
+
+Built with native TypeScript via Node.js >= 24 type stripping (no build step, no transpiler). Inspired by [marcoturi/fastify-boilerplate](https://github.com/marcoturi/fastify-boilerplate).
 
 ## Resources
 

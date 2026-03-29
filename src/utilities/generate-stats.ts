@@ -1,13 +1,14 @@
 import chalk from "chalk";
+import type { CellwanStatusResponse, StatsJsonOutput } from "../types.ts";
 
 /**
- * Parses bandwidth string to number.
+ * Parses a bandwidth string or number to a number in MHz.
  * Example: parseBandwidth("60M") -> 60
  *
- * @param {string|number} bandwidth - The bandwidth value, e.g., "60M" or 60.
- * @returns {number} Bandwidth in MHz.
+ * @param bandwidth - The bandwidth value, e.g., `"60M"` or `60`.
+ * @returns Bandwidth in MHz.
  */
-const parseBandwidth = (bandwidth) => {
+const parseBandwidth = (bandwidth: string | number): number => {
   if (typeof bandwidth === "number") return bandwidth;
   if (typeof bandwidth === "string" && bandwidth.endsWith("M")) {
     return parseInt(bandwidth.slice(0, -1), 10) || 0;
@@ -16,16 +17,16 @@ const parseBandwidth = (bandwidth) => {
 };
 
 /**
- * Formats band details string.
+ * Formats a band identifier into a human-readable string with bandwidth details.
  * Example: formatBandDetails("LTE_BC7", 20, 10) -> "B7 (20MHz/10MHz)"
- * Example: formatBandDetails("N78", 60, 60) -> "N78 (60MHz/60MHz)"
+ * Example: formatBandDetails("N78", 60, 60)      -> "N78 (60MHz/60MHz)"
  *
- * @param {string} bandString - The band string, e.g., "LTE_BC7", "B1", or "N78".
- * @param {number} dlBandwidth - Downlink bandwidth in MHz.
- * @param {number} ulBandwidth - Uplink bandwidth in MHz.
- * @returns {string} Formatted band details.
+ * @param bandString - The band string, e.g., `"LTE_BC7"`, `"B1"`, or `"N78"`.
+ * @param dlBandwidth - Downlink bandwidth in MHz.
+ * @param ulBandwidth - Uplink bandwidth in MHz.
+ * @returns Formatted band details string.
  */
-const formatBandDetails = (bandString, dlBandwidth, ulBandwidth) => {
+const formatBandDetails = (bandString: string, dlBandwidth: number, ulBandwidth: number): string => {
   let output = "";
 
   if (bandString && bandString.length > 0) {
@@ -53,13 +54,13 @@ const formatBandDetails = (bandString, dlBandwidth, ulBandwidth) => {
 /**
  * Creates a text-based bar graph.
  *
- * @param {number} value - The current value.
- * @param {number} min - The minimum value of the range.
- * @param {number} max - The maximum value of the range.
- * @param {number} [width=20] - The width of the bar in characters.
- * @returns {string} String representation of the bar.
+ * @param value - The current value (may be `undefined` for missing signal data).
+ * @param min - The minimum value of the range.
+ * @param max - The maximum value of the range.
+ * @param width - The width of the bar in characters.
+ * @returns String representation of the bar.
  */
-const createBar = (value, min, max, width = 20) => {
+const createBar = (value: number | undefined, min: number, max: number, width = 20): string => {
   if (value === undefined || value === null || Number.isNaN(value)) return "[N/A]".padEnd(width + 2); // +2 for brackets.
 
   const clampedValue = Math.max(min, Math.min(max, value));
@@ -70,7 +71,7 @@ const createBar = (value, min, max, width = 20) => {
   const filledBar = "█".repeat(filledCount);
   const emptyBar = " ".repeat(emptyCount);
 
-  let coloredBar;
+  let coloredBar: string;
   const pc = percentage * 100;
 
   if (pc < 50) {
@@ -87,12 +88,15 @@ const createBar = (value, min, max, width = 20) => {
 /**
  * Generates formatted network statistics from a cellwan status API response.
  *
- * @param {import("../types.js").CellwanStatusResponse} statsJson - The parsed cellwan status API response.
- * @param {"pretty" | "json"} [format="pretty"] - Output format: `"pretty"` for a coloured CLI string, `"json"` for a structured object.
- * @returns {string | import("../types.js").StatsJsonOutput} A formatted string when `format` is `"pretty"`, or a {@link import("../types.js").StatsJsonOutput} object when `"json"`.
+ * @param statsJson - The parsed cellwan status API response.
+ * @param format - Output format: `"pretty"` for a coloured CLI string, `"json"` for a structured object.
+ * @returns A formatted string when `format` is `"pretty"`, or a {@link StatsJsonOutput} object when `"json"`.
  * @throws {Error} If no valid stats data is available.
  */
-export default (statsJson, format = "pretty") => {
+function generateStats(statsJson: CellwanStatusResponse, format: "pretty"): string;
+function generateStats(statsJson: CellwanStatusResponse, format: "json"): StatsJsonOutput;
+function generateStats(statsJson: CellwanStatusResponse, format?: "pretty" | "json"): string | StatsJsonOutput;
+function generateStats(statsJson: CellwanStatusResponse, format: "pretty" | "json" = "pretty"): string | StatsJsonOutput {
   if (!statsJson || !statsJson.Object || !statsJson.Object[0]) {
     throw new Error("No valid stats data available to display.");
   }
@@ -114,9 +118,8 @@ export default (statsJson, format = "pretty") => {
     }
   }
 
-  const cellId = data.INTF_Cell_ID !== undefined ? data.INTF_Cell_ID : "N/A";
-  /** @type {number | string} */
-  let enbId = "N/A";
+  const cellId: number | "N/A" = data.INTF_Cell_ID !== undefined ? data.INTF_Cell_ID : "N/A";
+  let enbId: number | string = "N/A";
   if (cellId !== "N/A") {
     enbId = Math.trunc(cellId / 256);
   }
@@ -126,8 +129,8 @@ export default (statsJson, format = "pretty") => {
     plmn = "22288";
   }
 
-  const pci = data.INTF_PhyCell_ID !== undefined ? data.INTF_PhyCell_ID : "N/A";
-  const earfcn = data.INTF_RFCN !== undefined ? data.INTF_RFCN : "N/A";
+  const pci: number | string = data.INTF_PhyCell_ID !== undefined ? data.INTF_PhyCell_ID : "N/A";
+  const earfcn: number | string = data.INTF_RFCN !== undefined ? data.INTF_RFCN : "N/A";
 
   const pccUlBw = data.INTF_Uplink_Bandwidth !== undefined ? 5 * (Number(data.INTF_Uplink_Bandwidth) - 1) : 0;
   const pccDlBw = data.INTF_Downlink_Bandwidth !== undefined ? 5 * (Number(data.INTF_Downlink_Bandwidth) - 1) : 0;
@@ -136,9 +139,7 @@ export default (statsJson, format = "pretty") => {
   let caInfo = "None";
   if (Array.isArray(data.SCC_Info) && data.SCC_Info.length > 0) {
     caInfo = data.SCC_Info.filter((scc) => scc.Enable && scc.Band)
-      .map((scc) => {
-        return formatBandDetails(scc.Band, 0, 0);
-      })
+      .map((scc) => formatBandDetails(scc.Band, 0, 0))
       .join(" + ");
 
     if (!caInfo) caInfo = "None";
@@ -151,28 +152,27 @@ export default (statsJson, format = "pretty") => {
 
   // 5G NSA data extraction.
   const nsaEnabled = data.NSA_Enable === true;
-  const nsaPci = nsaEnabled && data.NSA_PhyCellID !== undefined ? data.NSA_PhyCellID : "N/A";
-  const nsaRfcn = nsaEnabled && data.NSA_RFCN !== undefined ? data.NSA_RFCN : "N/A";
+  const nsaPci: number | string = nsaEnabled && data.NSA_PhyCellID !== undefined ? data.NSA_PhyCellID : "N/A";
+  const nsaRfcn: number | string = nsaEnabled && data.NSA_RFCN !== undefined ? data.NSA_RFCN : "N/A";
   const nsaUlBw = nsaEnabled ? parseBandwidth(data.NSA_UplinkBandwidth) : 0;
   const nsaDlBw = nsaEnabled ? parseBandwidth(data.NSA_DownlinkBandwidth) : 0;
   const nsaBand = nsaEnabled && data.NSA_Band ? formatBandDetails(data.NSA_Band, nsaDlBw, nsaUlBw) : "N/A";
-  const nsaRsrp = nsaEnabled ? data.NSA_RSRP : undefined;
-  const nsaRsrq = nsaEnabled ? data.NSA_RSRQ : undefined;
-  const nsaSinr = nsaEnabled ? data.NSA_SINR : undefined;
-  const nsaRssi = nsaEnabled ? data.NSA_RSSI : undefined;
+  const nsaRsrp: number | undefined = nsaEnabled ? data.NSA_RSRP : undefined;
+  const nsaRsrq: number | undefined = nsaEnabled ? data.NSA_RSRQ : undefined;
+  const nsaSinr: number | undefined = nsaEnabled ? data.NSA_SINR : undefined;
+  const nsaRssi: number | undefined = nsaEnabled ? data.NSA_RSSI : undefined;
 
   let lteItalyLink = "N/A";
   if (plmn !== "N/A" && enbId !== "N/A") {
     lteItalyLink = `https://lteitaly.it/internal/map.php#bts=${plmn}.${enbId}`;
   }
 
-  let output;
   if (format === "pretty") {
     const now = new Date();
     const formattedTimestamp = `${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
 
     // TODO: Review the output format and content.
-    output = `
+    return `
 
   ===========================================
   LTE Network Stats
@@ -212,34 +212,34 @@ export default (statsJson, format = "pretty") => {
   Report generated at: ${formattedTimestamp}
   ===========================================
   `;
-  } else {
-    output = {
-      technology,
-      plmn,
-      enbId,
-      cellId,
-      pci,
-      earfcn,
-      lteItalyLink,
-      currentBand,
-      caInfo,
-      rsrp,
-      rsrq,
-      sinr,
-      rssi,
-      nsa: {
-        enabled: nsaEnabled,
-        band: nsaBand,
-        pci: nsaPci,
-        arfcn: nsaRfcn,
-        rsrp: nsaRsrp,
-        rsrq: nsaRsrq,
-        sinr: nsaSinr,
-        rssi: nsaRssi,
-      },
-      timestamp: new Date().toISOString(),
-    };
   }
 
-  return output;
-};
+  return {
+    technology,
+    plmn,
+    enbId,
+    cellId,
+    pci,
+    earfcn,
+    lteItalyLink,
+    currentBand,
+    caInfo,
+    rsrp,
+    rsrq,
+    sinr,
+    rssi,
+    nsa: {
+      enabled: nsaEnabled,
+      band: nsaBand,
+      pci: nsaPci,
+      arfcn: nsaRfcn,
+      rsrp: nsaRsrp,
+      rsrq: nsaRsrq,
+      sinr: nsaSinr,
+      rssi: nsaRssi,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
+export default generateStats;

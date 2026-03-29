@@ -1,14 +1,15 @@
-import httpsAgent from "./https-agent.js";
+import type { CellwanStatusResponse } from "../types.ts";
+import httpsAgent from "./https-agent.ts";
 
 /**
  * Fetches the cellwan status from the Zyxel router API.
  *
- * @param {string} serverUrl - The router's base URL.
- * @param {string} cookieSession - The session cookie value.
- * @returns {Promise<import("../types.js").CellwanStatusResponse>} The parsed cellwan status response.
+ * @param serverUrl - The router's base URL.
+ * @param cookieSession - The session cookie value.
+ * @returns The parsed cellwan status response.
  * @throws {Error} If the HTTP response status is not 200.
  */
-export default async (serverUrl, cookieSession) => {
+export default async (serverUrl: string, cookieSession: string): Promise<CellwanStatusResponse> => {
   const result = await fetch(`${serverUrl}/cgi-bin/DAL?oid=cellwan_status`, {
     method: "GET",
     headers: { cookie: `Session=${cookieSession}` },
@@ -20,5 +21,5 @@ export default async (serverUrl, cookieSession) => {
     throw new Error("Error while fetching stats.");
   }
 
-  return await result.json();
+  return result.json() as Promise<CellwanStatusResponse>;
 };
