@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0 - 2026-03-29
+
+- Update - Converted project to TypeScript with Node.js 24 type stripping.
+- Update - Updated dependencies.
+
 ## 2.0.0 - 2026-02-27
 
 - Update - Removed support for Zyxel LTE5398-M904 and added support for Zyxel Nebula FWA505.
