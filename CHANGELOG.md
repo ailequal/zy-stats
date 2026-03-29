@@ -2,6 +2,10 @@
 
 ## 2.1.0 - 2026-03-29
 
+- Add - Added `.gitattributes` file.
+
+## 2.1.0 - 2026-03-29
+
 - Update - Converted project to TypeScript with Node.js 24 type stripping.
 - Update - Updated dependencies.
 
