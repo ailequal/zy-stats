@@ -96,7 +96,10 @@ const createBar = (value: number | undefined, min: number, max: number, width = 
 function generateStats(statsJson: CellwanStatusResponse, format: "pretty"): string;
 function generateStats(statsJson: CellwanStatusResponse, format: "json"): StatsJsonOutput;
 function generateStats(statsJson: CellwanStatusResponse, format?: "pretty" | "json"): string | StatsJsonOutput;
-function generateStats(statsJson: CellwanStatusResponse, format: "pretty" | "json" = "pretty"): string | StatsJsonOutput {
+function generateStats(
+  statsJson: CellwanStatusResponse,
+  format: "pretty" | "json" = "pretty"
+): string | StatsJsonOutput {
   if (!statsJson || !statsJson.Object || !statsJson.Object[0]) {
     throw new Error("No valid stats data available to display.");
   }

@@ -10,10 +10,10 @@
   "scripts": {
     "start": "node --env-file=.env src/app.ts",
     "type:check": "tsc --noEmit",
-    "lint:check": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier --write .",
+    "lint:check": "oxlint src/",
+    "lint:fix": "oxlint --fix src/",
+    "fmt:check": "oxfmt --check",
+    "fmt:write": "oxfmt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -43,13 +43,9 @@
     "undici": "^7.24.6"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
-    "eslint": "^10.1.0",
-    "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.4.0",
-    "prettier": "3.8.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.2"
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "typescript": "^5.9.3"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript"],
+  "categories": {},
+  "rules": {},
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "globals": {},
+  "ignorePatterns": ["node_modules/", "src/hacks/"]
+}
