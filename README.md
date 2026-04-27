@@ -13,7 +13,7 @@ The following Zyxel router models are supported:
 
 To use it, first make sure to have the compatible Node.js version active ([nvm](https://github.com/nvm-sh/nvm) execute `nvm use`).
 
-Beware that `zy-stats` needs Google Chrome installed on the host machine to perform the log in successfully thorugh Puppeteer.
+Beware that `zy-stats` needs Google Chrome installed on the host machine to perform the log in successfully through Puppeteer.
 
 To use this program, you need to fill the `.env` file properly (or directly pass the environment variables as CLI arguments). Check the `.env.example` file for more information.
 
@@ -30,9 +30,33 @@ npm install --omit=dev # install only the production dependencies
 npx zy-stats # shows stats nicely formatted into the terminal
 npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
 npm exec zy-stats -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
+npm run start -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
 
 # handy alias
 alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
+```
+
+## Docker
+
+The Docker setup bundles Node.js and Chromium into a single image, so that no local Node.js or Chrome installation is required on the host.
+
+```bash
+# fill the .env file with the correct credentials
+
+# build the image
+docker compose build
+
+# start the container in the background
+docker compose up -d
+
+# follow live container output
+docker compose logs -f
+```
+
+Logs land in the same `./logs/` directory as the non-Docker setup and survive container restarts and rebuilds. To rebuild after pulling new code or changing dependencies:
+
+```bash
+docker compose down && docker compose build && docker compose up -d
 ```
 
 ## CLI arguments
@@ -48,6 +72,8 @@ alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
 ## Development
 
 Built with native TypeScript via Node.js >= 24 type stripping (no build step, no transpiler). Inspired by [marcoturi/fastify-boilerplate](https://github.com/marcoturi/fastify-boilerplate).
+
+If you have [just](https://github.com/casey/just) installed, run `just` to list all available recipes and run them quickly.
 
 ## Resources
 
