@@ -1,5 +1,4 @@
 # Debian-based Node.js image with system Chromium for puppeteer-core.
-
 FROM node:24-slim
 
 # Install Chromium and minimal runtime dependencies.
