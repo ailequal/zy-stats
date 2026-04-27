@@ -1,3 +1,4 @@
+import { fetch } from "undici";
 import httpsAgent from "./https-agent.ts";
 
 /**
@@ -13,7 +14,6 @@ export default async (serverUrl: string, cookieSession: string): Promise<unknown
   const result = await fetch(`${serverUrl}/cgi-bin/UserLoginCheck`, {
     method: "GET",
     headers: { cookie: `Session=${cookieSession}` },
-    // @ts-expect-error -- `dispatcher` is a valid undici/Node.js fetch option not covered by the standard RequestInit types.
     dispatcher: httpsAgent,
   });
 

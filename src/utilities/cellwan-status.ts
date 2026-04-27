@@ -1,3 +1,4 @@
+import { fetch } from "undici";
 import type { CellwanStatusResponse } from "../types.ts";
 import httpsAgent from "./https-agent.ts";
 
@@ -13,7 +14,6 @@ export default async (serverUrl: string, cookieSession: string): Promise<Cellwan
   const result = await fetch(`${serverUrl}/cgi-bin/DAL?oid=cellwan_status`, {
     method: "GET",
     headers: { cookie: `Session=${cookieSession}` },
-    // @ts-expect-error -- `dispatcher` is a valid undici/Node.js fetch option not covered by the standard RequestInit types.
     dispatcher: httpsAgent,
   });
 
