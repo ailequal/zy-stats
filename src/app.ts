@@ -16,11 +16,11 @@ import loginCheck from "./utilities/login-check.ts";
 import maybeCreateLogsDir from "./utilities/maybe-create-logs-dir.ts";
 
 // Global constants.
-/** Puppeteer browser channel to launch. */
-const PUPPETEER_CHANNEL: puppeteer.ChromeReleaseChannel = "chrome";
-/** Name of the session cookie set by the Zyxel router. */
+// System Chromium path (only with Docker).
+const CHROMIUM_PATH = process.env.CHROMIUM_PATH;
+// Name of the session cookie set by the Zyxel router.
 const SESSION_COOKIE_NAME = "Session";
-/** localStorage key that holds the AES encryption key. */
+// localStorage key that holds the AES encryption key.
 const AES_KEY_LOCAL_STORAGE_KEY = "zySessionKey";
 
 // Create the `/logs` directory at the root of the project.
@@ -38,10 +38,25 @@ const LOGS_DIR = path.join(__dirname, "..", "logs");
  * @param options - CLI options parsed by Commander.
  */
 const app = async ({ headless, serverUrl, username, password, interval, log }: AppOptions): Promise<void> => {
-  const browser = await puppeteer.launch({ channel: PUPPETEER_CHANNEL, headless: headless, acceptInsecureCerts: true });
+  const browser = await puppeteer.launch({
+    ...(CHROMIUM_PATH
+      ? {
+          executablePath: CHROMIUM_PATH,
+          args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+        }
+      : { channel: "chrome" as puppeteer.ChromeReleaseChannel }),
+    headless: headless,
+    acceptInsecureCerts: true,
+  });
   const page = await browser.newPage();
 
-  await page.goto(serverUrl);
+  try {
+    await page.goto(serverUrl);
+  } catch (error) {
+    await browser.close();
+    console.error(`Failed to navigate to "${serverUrl}".`, error);
+    process.exit(1);
+  }
   await page.setViewport({ width: 1080, height: 1024 });
 
   await page.locator("#username").fill(username);
@@ -55,6 +70,10 @@ const app = async ({ headless, serverUrl, username, password, interval, log }: A
   const aesKey = await getLocalStorageValue(page, AES_KEY_LOCAL_STORAGE_KEY);
   await browser.close();
 
+  // When running with Docker, the router's embedded web server needs a moment
+  // to release the connections opened by Chromium before it can accept new ones.
+  if (CHROMIUM_PATH) await setTimeout(3000);
+
   if (!session || !aesKey) {
     console.error("Failed to retrieve session or/and AES key.");
     process.exit(1);
@@ -62,11 +81,10 @@ const app = async ({ headless, serverUrl, username, password, interval, log }: A
 
   try {
     await maybeCreateLogsDir(LOGS_DIR);
-
     const loginCheckData = await loginCheck(serverUrl, session);
     console.log("loginCheckData", loginCheckData);
   } catch (error) {
-    console.error((error as Error).message);
+    console.error(error);
     process.exit(1);
   }
 
@@ -112,7 +130,7 @@ const app = async ({ headless, serverUrl, username, password, interval, log }: A
       process.exit(0);
     }
 
-    console.error((error as Error).message);
+    console.error(error);
     process.exit(1);
   }
 };
@@ -135,5 +153,5 @@ program
   .option("-p, --password <password>", "password for login", password)
   .option("-i, --interval <seconds>", "interval in seconds for fetching stats", interval)
   .option("-l, --log", "log stats into a file", false)
-  .action((options: AppOptions) => app(options));
+  .action((options: AppOptions) => app({ ...options }));
 program.parse();

@@ -1,2 +1,0 @@
-# Exclude vendored/third-party code from GitHub language statistics.
-src/hacks/** linguist-vendored

@@ -1,0 +1,12 @@
+services:
+  zy-stats:
+    build:
+      context: .
+      pull: true
+    container_name: zy-stats
+    environment:
+      - FORCE_COLOR=1
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./logs:/app/logs
+    # restart: unless-stopped

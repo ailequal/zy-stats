@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# environment (injected via volume mount)
+.env
+.env.example
+
+# logs (persisted via volume mount)
+logs/
+
+# git
+.git/
+.gitattributes
+
+# dev tooling
+.oxfmtrc.json
+.oxlintrc.json
+.nvmrc
+tsconfig.json
+
+# documentation
+*.md
+
+# os files
+.DS_Store
+
+# hacks (vendored browser scripts)
+src/hacks/
