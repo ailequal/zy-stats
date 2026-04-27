@@ -11,7 +11,7 @@ The following Zyxel router models are supported:
 
 ## Setup
 
-To use it, first make sure to have the compatible Node.js version active ([nvm](https://github.com/nvm-sh/nvm) execute `nvm use`).
+To use it, first make sure to have the compatible Node.js version active ([nvm](https://github.com/nvm-sh/nvm) executes `nvm use`).
 
 Beware that `zy-stats` needs Google Chrome installed on the host machine to perform the log in successfully through Puppeteer.
 
@@ -29,8 +29,8 @@ npm install --omit=dev # install only the production dependencies
 # fill the .env file with the correct credentials
 npx zy-stats # shows stats nicely formatted into the terminal
 npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
-npm exec zy-stats -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
-npm run start -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
+npm exec zy-stats -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # or like this
+npm run start -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # or like this
 
 # handy alias
 alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
@@ -79,3 +79,5 @@ If you have [just](https://github.com/casey/just) installed, run `just` to list 
 
 - [Zyxel Nebula FWA505](https://www.zyxel.com/global/en/products/mobile-broadband/nebula-5g-nr-indoor-router-nebula-fwa505)
 - [miononno.it/router/zyxel-fwa-505](https://miononno.it/router/zyxel-fwa-505)
+- [Zyxel LTE5398-M904](https://www.zyxel.com/global/en/products/mobile-broadband/4g-lte-a-pro-indoor-iad-lte5398-m904)
+- [miononno.it/router/zyxel-lte5398-m904](https://miononno.it/router/zyxel-lte5398-m904)

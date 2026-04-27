@@ -60,6 +60,14 @@ docker-rebuild:
 docker-shell:
   docker compose exec zy-stats /bin/bash
 
+# Show last recorded JSON logs
+show-logs:
+  @cat logs/$(date +%Y-%m-%d).log 2>/dev/null || echo "No log file found for today."
+
+# Print container logs once without following
+docker-logs-once:
+  -docker compose logs
+
 # Follow live container logs
 docker-logs:
   -docker compose logs -f
@@ -67,3 +75,7 @@ docker-logs:
 # Remove containers, images, volumes, and orphans
 docker-clean:
   docker compose down --rmi local --volumes --remove-orphans
+
+# Delete log files older than 30 days
+logs-clean:
+  find logs/ -name "*.log" -mtime +30 -delete
