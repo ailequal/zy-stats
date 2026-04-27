@@ -4,12 +4,10 @@ Fetch Zyxel's stats from the CLI in a pretty way.
 
 ## Device support
 
-Checkout the different project's tags for the supported devices:
+The following Zyxel router models are supported:
 
-- `2.0.0` and higher: Zyxel Nebula FWA505
-- `1.1.1` and lower: Zyxel LTE5398-M904
-
-The program might also work with other models, but no guarantee is given (some slightly adjustments might be required).
+- Zyxel Nebula FWA505 (default, `--device fwa505`)
+- Zyxel LTE5398-M904 (`--device lte5398`)
 
 ## Setup
 
@@ -45,6 +43,7 @@ alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
 - `--password`: the password to access the Zyxel router.
 - `--interval`: the interval in seconds to fetch the stats.
 - `--log`: log the stats into a file in JSON format.
+- `--device`: the router model (`fwa505` or `lte5398`, default: `fwa505`).
 
 ## Development
 

@@ -195,6 +195,24 @@ export interface StatsJsonOutput {
 // ---------------------------------------------------------------------------
 
 /**
+ * Supported Zyxel router models.
+ *
+ * - `"fwa505"` – Zyxel Nebula FWA505 (plain-text API, 5G NSA capable).
+ * - `"lte5398"` – Zyxel LTE5398-M904 (AES-encrypted API, 4G LTE only).
+ */
+export type DeviceType = "fwa505" | "lte5398";
+
+/**
+ * Encrypted API response returned by older Zyxel routers (e.g. LTE5398-M904).
+ * The `content` field is AES-CBC encrypted and Base64-encoded; `iv` is the
+ * corresponding initialisation vector.
+ */
+export interface EncryptedResponse {
+  content: string;
+  iv: string;
+}
+
+/**
  * Options object passed to the main application function from parseArgs.
  */
 export interface AppOptions {
@@ -210,4 +228,6 @@ export interface AppOptions {
   interval: number;
   /** Whether to log stats to a file. */
   log: boolean;
+  /** Target router model. */
+  device: DeviceType;
 }

@@ -6,7 +6,7 @@ import puppeteer from "puppeteer-core";
 import { setTimeout } from "timers/promises";
 import { fileURLToPath } from "url";
 import { parseArgs } from "node:util";
-import type { AppOptions } from "./types.ts";
+import type { AppOptions, DeviceType } from "./types.ts";
 import cellwanStatus from "./utilities/cellwan-status.ts";
 import generateStats from "./utilities/generate-stats.ts";
 import getCookie from "./utilities/get-cookie-value.ts";
@@ -20,8 +20,11 @@ import maybeCreateLogsDir from "./utilities/maybe-create-logs-dir.ts";
 const CHROMIUM_PATH = process.env.CHROMIUM_PATH;
 // Name of the session cookie set by the Zyxel router.
 const SESSION_COOKIE_NAME = "Session";
-// localStorage key that holds the AES encryption key.
-const AES_KEY_LOCAL_STORAGE_KEY = "zySessionKey";
+// localStorage key that holds the AES encryption key (varies by router model).
+const AES_KEY_LOCAL_STORAGE_KEY: Record<DeviceType, string> = {
+  fwa505: "zySessionKey",
+  lte5398: "AesKey",
+};
 
 // Create the `/logs` directory at the root of the project.
 const __filename = fileURLToPath(import.meta.url);
@@ -37,7 +40,7 @@ const LOGS_DIR = path.join(__dirname, "..", "logs");
  *
  * @param options - CLI options parsed by parseArgs.
  */
-const app = async ({ headless, serverUrl, username, password, interval, log }: AppOptions): Promise<void> => {
+const app = async ({ headless, serverUrl, username, password, interval, log, device }: AppOptions): Promise<void> => {
   const browser = await puppeteer.launch({
     ...(CHROMIUM_PATH
       ? {
@@ -67,7 +70,7 @@ const app = async ({ headless, serverUrl, username, password, interval, log }: A
   await page.waitForSelector("#card_sysinfo_macaddr", { visible: true });
 
   const session = await getCookie(browser, SESSION_COOKIE_NAME);
-  const aesKey = await getLocalStorageValue(page, AES_KEY_LOCAL_STORAGE_KEY);
+  const aesKey = await getLocalStorageValue(page, AES_KEY_LOCAL_STORAGE_KEY[device]);
   await browser.close();
 
   // When running with Docker, the router's embedded web server needs a moment
@@ -103,7 +106,7 @@ const app = async ({ headless, serverUrl, username, password, interval, log }: A
   const loop = async (): Promise<void> => {
     console.clear();
 
-    const statsJson = await cellwanStatus(serverUrl, session);
+    const statsJson = await cellwanStatus(serverUrl, session, device === "lte5398" ? aesKey! : undefined);
 
     if (!log) {
       console.log(generateStats(statsJson, "pretty"));
@@ -141,6 +144,7 @@ const serverUrl = process.env.SERVER_URL;
 const username = process.env.USERNAME;
 const password = process.env.PASSWORD;
 const interval = process.env.INTERVAL;
+const device = process.env.DEVICE;
 
 // Command-line interface setup.
 const { values } = parseArgs({
@@ -151,6 +155,7 @@ const { values } = parseArgs({
     password: { type: "string", short: "p" },
     interval: { type: "string", short: "i" },
     log: { type: "boolean", short: "l" },
+    device: { type: "string", short: "d" },
     version: { type: "boolean", short: "V" },
     help: { type: "boolean", short: "h" },
   },
@@ -175,6 +180,7 @@ Options:
   -p, --password <password>  password for login
   -i, --interval <seconds>   interval in seconds for fetching stats
   -l, --log                  log stats into a file (default: false)
+  -d, --device <model>       router model: fwa505, lte5398 (default: fwa505)
   -h, --help                 display help for command`);
   process.exit(0);
 }
@@ -186,4 +192,5 @@ app({
   password: (values.password ?? password) as string,
   interval: Number(values.interval ?? interval),
   log: values.log ?? false,
+  device: (values.device ?? device ?? "fwa505") as DeviceType,
 });

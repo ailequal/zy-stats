@@ -3,16 +3,18 @@ import type { CellwanStatusResponse, StatsJsonOutput } from "../types.ts";
 
 /**
  * Parses a bandwidth string or number to a number in MHz.
- * Example: parseBandwidth("60M") -> 60
  *
- * @param bandwidth - The bandwidth value, e.g., `"60M"` or `60`.
+ * Newer routers return a string like `"20M"`, while older models return a
+ * numeric 3GPP bandwidth index (e.g. `5` → `5 * (5 - 1) = 20` MHz).
+ *
+ * @param bandwidth - The bandwidth value, e.g., `"60M"` or `5`.
  * @returns Bandwidth in MHz.
  */
 const parseBandwidth = (bandwidth: string | number): number => {
-  if (typeof bandwidth === "number") return bandwidth;
   if (typeof bandwidth === "string" && bandwidth.endsWith("M")) {
     return parseInt(bandwidth.slice(0, -1), 10) || 0;
   }
+  if (typeof bandwidth === "number") return 5 * (bandwidth - 1);
   return 0;
 };
 
@@ -135,8 +137,8 @@ function generateStats(
   const pci: number | string = data.INTF_PhyCell_ID !== undefined ? data.INTF_PhyCell_ID : "N/A";
   const earfcn: number | string = data.INTF_RFCN !== undefined ? data.INTF_RFCN : "N/A";
 
-  const pccUlBw = data.INTF_Uplink_Bandwidth !== undefined ? 5 * (Number(data.INTF_Uplink_Bandwidth) - 1) : 0;
-  const pccDlBw = data.INTF_Downlink_Bandwidth !== undefined ? 5 * (Number(data.INTF_Downlink_Bandwidth) - 1) : 0;
+  const pccUlBw = data.INTF_Uplink_Bandwidth !== undefined ? parseBandwidth(data.INTF_Uplink_Bandwidth) : 0;
+  const pccDlBw = data.INTF_Downlink_Bandwidth !== undefined ? parseBandwidth(data.INTF_Downlink_Bandwidth) : 0;
   const currentBand = data.INTF_Current_Band ? formatBandDetails(data.INTF_Current_Band, pccDlBw, pccUlBw) : "N/A";
 
   let caInfo = "None";
