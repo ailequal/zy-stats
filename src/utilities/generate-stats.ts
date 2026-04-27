@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import { styleText } from "node:util";
 import type { CellwanStatusResponse, StatsJsonOutput } from "../types.ts";
 
 /**
@@ -75,11 +75,11 @@ const createBar = (value: number | undefined, min: number, max: number, width = 
   const pc = percentage * 100;
 
   if (pc < 50) {
-    coloredBar = chalk.yellow(filledBar);
+    coloredBar = styleText("yellow", filledBar);
   } else if (pc < 85) {
-    coloredBar = chalk.green(filledBar);
+    coloredBar = styleText("green", filledBar);
   } else {
-    coloredBar = chalk.red(filledBar);
+    coloredBar = styleText("red", filledBar);
   }
 
   return `[${coloredBar}${emptyBar}]`;
