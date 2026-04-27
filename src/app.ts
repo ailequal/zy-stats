@@ -1,11 +1,11 @@
 #!/usr/bin/env -S node --env-file=.env
 
-import { program } from "commander";
 import fs from "fs/promises";
 import path from "path";
 import puppeteer from "puppeteer-core";
 import { setTimeout } from "timers/promises";
 import { fileURLToPath } from "url";
+import { parseArgs } from "node:util";
 import type { AppOptions } from "./types.ts";
 import cellwanStatus from "./utilities/cellwan-status.ts";
 import generateStats from "./utilities/generate-stats.ts";
@@ -35,7 +35,7 @@ const LOGS_DIR = path.join(__dirname, "..", "logs");
  * session cookie and AES key, then starts a polling loop that periodically
  * fetches and displays (or logs) network statistics.
  *
- * @param options - CLI options parsed by Commander.
+ * @param options - CLI options parsed by parseArgs.
  */
 const app = async ({ headless, serverUrl, username, password, interval, log }: AppOptions): Promise<void> => {
   const browser = await puppeteer.launch({
@@ -143,15 +143,47 @@ const password = process.env.PASSWORD;
 const interval = process.env.INTERVAL;
 
 // Command-line interface setup.
-program
-  .name("zy-stats")
-  .description(`Fetch Zyxel's stats from the CLI.`)
-  .version(appVersion ?? "")
-  .option("--no-headless", "disable headless mode")
-  .option("-s, --server-url <url>", "server URL", serverUrl)
-  .option("-u, --username <username>", "username for login", username)
-  .option("-p, --password <password>", "password for login", password)
-  .option("-i, --interval <seconds>", "interval in seconds for fetching stats", interval)
-  .option("-l, --log", "log stats into a file", false)
-  .action((options: AppOptions) => app({ ...options }));
-program.parse();
+const { values } = parseArgs({
+  options: {
+    "no-headless": { type: "boolean" },
+    "server-url": { type: "string", short: "s" },
+    username: { type: "string", short: "u" },
+    password: { type: "string", short: "p" },
+    interval: { type: "string", short: "i" },
+    log: { type: "boolean", short: "l" },
+    version: { type: "boolean", short: "V" },
+    help: { type: "boolean", short: "h" },
+  },
+  strict: true,
+});
+
+if (values.version) {
+  console.log(appVersion ?? "");
+  process.exit(0);
+}
+
+if (values.help) {
+  console.log(`Usage: zy-stats [options]
+
+Fetch Zyxel's stats from the CLI.
+
+Options:
+  -V, --version              output the version number
+  --no-headless              disable headless mode
+  -s, --server-url <url>     server URL
+  -u, --username <username>  username for login
+  -p, --password <password>  password for login
+  -i, --interval <seconds>   interval in seconds for fetching stats
+  -l, --log                  log stats into a file (default: false)
+  -h, --help                 display help for command`);
+  process.exit(0);
+}
+
+app({
+  headless: !values["no-headless"],
+  serverUrl: (values["server-url"] ?? serverUrl) as string,
+  username: (values.username ?? username) as string,
+  password: (values.password ?? password) as string,
+  interval: Number(values.interval ?? interval),
+  log: values.log ?? false,
+});

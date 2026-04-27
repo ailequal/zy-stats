@@ -195,7 +195,7 @@ export interface StatsJsonOutput {
 // ---------------------------------------------------------------------------
 
 /**
- * Options object passed to the main application function from Commander.
+ * Options object passed to the main application function from parseArgs.
  */
 export interface AppOptions {
   /** Whether to run the browser in headless mode. */
