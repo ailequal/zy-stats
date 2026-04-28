@@ -2,6 +2,8 @@
 
 Fetch Zyxel's stats from the CLI in a pretty way.
 
+Built with native TypeScript support via Node.js >= 24 type stripping (no build step, no transpiler). Inspired by [marcoturi/fastify-boilerplate](https://github.com/marcoturi/fastify-boilerplate).
+
 ## Device support
 
 The following Zyxel router models are supported:
@@ -9,19 +11,15 @@ The following Zyxel router models are supported:
 - Zyxel Nebula FWA505 (default, `--device fwa505`)
 - Zyxel LTE5398-M904 (`--device lte5398`)
 
-## Setup
+## Local
 
-To use it, first make sure to have the compatible Node.js version active ([nvm](https://github.com/nvm-sh/nvm) executes `nvm use`).
+To use it locally on your machine, first make sure to have the compatible Node.js version active ([nvm](https://github.com/nvm-sh/nvm) executes `nvm use`).
 
 Beware that `zy-stats` needs Google Chrome installed on the host machine to perform the log in successfully through Puppeteer.
-
-To use this program, you need to fill the `.env` file properly (or directly pass the environment variables as CLI arguments). Check the `.env.example` file for more information.
 
 Here below are listed the basic steps to install and run the program:
 
 ```bash
-git clone https://github.com/ailequal/zy-stats.git
-cd zy-stats
 chmod +x ./src/app.ts # make the script executable
 nvm use # set the correct nodejs version
 npm install --omit=dev # install only the production dependencies
@@ -63,7 +61,6 @@ just docker-dev-build
 just docker-dev-up-detached
 ```
 
-
 ## CLI arguments
 
 - `--no-headless`: disable browser headless mode (useful for debugging).
@@ -73,10 +70,6 @@ just docker-dev-up-detached
 - `--interval`: the interval in seconds to fetch the stats.
 - `--log`: log the stats into a file in JSON format.
 - `--device`: the router model (`fwa505` or `lte5398`, default: `fwa505`).
-
-## Development
-
-Built with native TypeScript via Node.js >= 24 type stripping (no build step, no transpiler). Inspired by [marcoturi/fastify-boilerplate](https://github.com/marcoturi/fastify-boilerplate).
 
 If you have [just](https://github.com/casey/just) installed, run `just` to list all available recipes and run them quickly.
 
