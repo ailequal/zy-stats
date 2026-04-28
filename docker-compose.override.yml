@@ -1,0 +1,8 @@
+services:
+  zy-stats:
+    build:
+      target: dev
+    container_name: zy-stats-dev
+    volumes:
+      - .:/app
+      - /app/node_modules # anonymous volume to prevent overwriting it with the host's

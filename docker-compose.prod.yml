@@ -1,0 +1,8 @@
+services:
+  zy-stats:
+    build:
+      target: prod
+    container_name: zy-stats
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./logs:/app/logs

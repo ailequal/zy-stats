@@ -26,7 +26,8 @@ chmod +x ./src/app.ts # make the script executable
 nvm use # set the correct nodejs version
 npm install --omit=dev # install only the production dependencies
 
-# fill the .env file with the correct credentials
+cp .env.example .env  # fill in your router credentials
+
 npx zy-stats # shows stats nicely formatted into the terminal
 npx zy-stats --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # without filling the .env file
 npm exec zy-stats -- --server-url 'http://192.168.1.1' --username admin --password 'password' --interval 5 # or like this
@@ -38,26 +39,30 @@ alias zy-stats="cd ~/path-to-repos/zy-stats && nvm use && npx zy-stats"
 
 ## Docker
 
-The Docker setup bundles Node.js and Chromium into a single image, so that no local Node.js or Chrome installation is required on the host.
+The Docker setup bundles Node.js and Chromium into a single image, so that no local Node.js or Chrome installation is required on the host. Two modes are available: **production** (lean, source baked in) and **development** (full toolchain, source mounted from the host).
+
+### Production
+
+The production image contains only the production dependencies and the application source. Use it to run the program without any local setup.
+
+Logs land in the same `./logs/` directory as the non-Docker setup and survive container restarts and rebuilds.
 
 ```bash
-# fill the .env file with the correct credentials
-
-# build the image
-docker compose build
-
-# start the container in the background
-docker compose up -d
-
-# follow live container output
-docker compose logs -f
+cp .env.example .env  # fill in your router credentials
+just docker-build
+just docker-up-detached
 ```
 
-Logs land in the same `./logs/` directory as the non-Docker setup and survive container restarts and rebuilds. To rebuild after pulling new code or changing dependencies:
+### Development
+
+The development image installs all dependencies (including devDependencies). The project directory is bind-mounted into the container, so source code changes are reflected immediately; no rebuild needed after editing files. Only rebuild after changing `package.json` or `package-lock.json`.
 
 ```bash
-docker compose down && docker compose build && docker compose up -d
+cp .env.example .env  # fill in your router credentials
+just docker-dev-build
+just docker-dev-up-detached
 ```
+
 
 ## CLI arguments
 
