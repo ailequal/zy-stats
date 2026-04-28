@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.0.0 - 2026-04-28
+
+- Add - Migrated to ox tools.
+- Add - Added Docker setup.
+- Update - Updated dependencies and removed some with native Node.js functionalities.
+- Update - Support for both Zyxel Nebula FWA505 and Zyxel LTE5398-M904.
+
 ## 2.1.1 - 2026-03-29
 
 - Add - Added `.gitattributes` file.

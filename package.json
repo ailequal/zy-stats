@@ -1,6 +1,6 @@
 {
   "name": "zy-stats",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "Fetch Zyxel's stats from the CLI.",
   "main": "app.ts",
   "type": "module",
